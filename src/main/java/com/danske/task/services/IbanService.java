@@ -39,10 +39,12 @@ public class IbanService {
             return IbanResponseDto.builder().valid(false).build();
         }
 
+        //moves first 4 characters of iban to the back and turns it into a character list for ease of manipulation
         String ibanMoved = iban.substring(4).concat(iban.substring(0, 4));
         List<Character> ibanCharList = ibanMoved.chars().mapToObj(e -> (char) e).toList();
         StringBuilder modStringBuilder = new StringBuilder();
 
+        //converts letters to appropriate numeric values
         ibanCharList.forEach(ibanChar -> {
             if(Character.isLetter(ibanChar)){
                 modStringBuilder.append((int) ibanChar - 55);
@@ -50,25 +52,24 @@ public class IbanService {
             else modStringBuilder.append(Character.getNumericValue(ibanChar));
         });
 
-        String modString = modStringBuilder.toString();
-        int modResult = calculateMod(modString);
+        int modResult = calculateMod(modStringBuilder.toString());
         return IbanResponseDto.builder().valid(modResult == 1).build();
     }
 
+    //Splits the number into smaller chunks and calculates the remainder
     private int calculateMod(String modString){
-        int startIndex = 2;
         int endIndex = 9;
+        int step = 7;
         int length = modString.length();
         StringBuilder mod = new StringBuilder().append(modString, 0, 2);
-        while (length > 0){
-            mod = Integer.toString(parseInt(mod.append(modString.substring(startIndex, endIndex))) % 97);
-            length -= endIndex;
-            int step = Math.min(length, 7);
-            startIndex += step;
+        while (endIndex < length){
+            int newMod = parseInt(mod.append(modString, endIndex - step, endIndex).toString()) % 97;
+            mod.delete(0, 9).append(newMod);
+            step = Math.min(length - endIndex, step);
             endIndex += step;
         }
 
-        return parseInt(mod);
+        return parseInt(mod.append(modString, endIndex - step, endIndex).toString()) % 97;
     }
 
     private boolean validateLength(String country, int ibanLength){
