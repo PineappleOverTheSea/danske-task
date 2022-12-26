@@ -56,18 +56,19 @@ public class IbanService {
     }
 
     private int calculateMod(String modString){
-        String modStringCopy = modString;
-        String str = modStringCopy.substring(0, 9);
-        modStringCopy = modStringCopy.replaceFirst(str, "");
-        String N = Integer.toString(parseInt(str) % 97);
-        while (modStringCopy.length() > 0){
-            int endIndex = Math.min(modStringCopy.length(), 7);
-            str = modStringCopy.substring(0, endIndex);
-            modStringCopy = modStringCopy.replaceFirst(str, "");
-            N = Integer.toString(Integer.parseInt(N.concat(str)) % 97);
+        int startIndex = 2;
+        int endIndex = 9;
+        int length = modString.length();
+        StringBuilder mod = new StringBuilder().append(modString, 0, 2);
+        while (length > 0){
+            mod = Integer.toString(parseInt(mod.append(modString.substring(startIndex, endIndex))) % 97);
+            length -= endIndex;
+            int step = Math.min(length, 7);
+            startIndex += step;
+            endIndex += step;
         }
 
-        return Integer.parseInt(N);
+        return parseInt(mod);
     }
 
     private boolean validateLength(String country, int ibanLength){
