@@ -4,10 +4,7 @@ import com.danske.task.dto.IbanDto;
 import com.danske.task.dto.IbanResponseDto;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.lang.Integer.parseInt;
 
@@ -42,34 +39,34 @@ public class IbanService {
         //moves first 4 characters of iban to the back and turns it into a character list for ease of manipulation
         String ibanMoved = iban.substring(4).concat(iban.substring(0, 4));
         List<Character> ibanCharList = ibanMoved.chars().mapToObj(e -> (char) e).toList();
-        StringBuilder modStringBuilder = new StringBuilder();
+        StringBuilder numberStringBuilder = new StringBuilder();
 
         //converts letters to appropriate numeric values
         ibanCharList.forEach(ibanChar -> {
             if(Character.isLetter(ibanChar)){
-                modStringBuilder.append((int) ibanChar - 55);
+                numberStringBuilder.append((int) ibanChar - 55);
             }
-            else modStringBuilder.append(Character.getNumericValue(ibanChar));
+            else numberStringBuilder.append(Character.getNumericValue(ibanChar));
         });
 
-        int modResult = calculateMod(modStringBuilder.toString());
-        return IbanResponseDto.builder().valid(modResult == 1).build();
+        int remainder = calculateRemainder(numberStringBuilder.toString());
+        return IbanResponseDto.builder().valid(remainder == 1).build();
     }
 
     //Splits the number into smaller chunks and calculates the remainder
-    private int calculateMod(String modString){
+    private int calculateRemainder(String numberString){
         int endIndex = 9;
         int step = 7;
-        int length = modString.length();
-        StringBuilder mod = new StringBuilder().append(modString, 0, 2);
+        int length = numberString.length();
+        StringBuilder remainder = new StringBuilder().append(numberString, 0, 2);
         while (endIndex < length){
-            int newMod = parseInt(mod.append(modString, endIndex - step, endIndex).toString()) % 97;
-            mod.delete(0, 9).append(newMod);
+            int newRemainder = parseInt(remainder.append(numberString, endIndex - step, endIndex).toString()) % 97;
+            remainder.delete(0, 9).append(newRemainder);
             step = Math.min(length - endIndex, step);
             endIndex += step;
         }
 
-        return parseInt(mod.append(modString, endIndex - step, endIndex).toString()) % 97;
+        return parseInt(remainder.append(numberString, endIndex - step, endIndex).toString()) % 97;
     }
 
     private boolean validateLength(String country, int ibanLength){
