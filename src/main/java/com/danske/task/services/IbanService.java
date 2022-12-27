@@ -2,19 +2,14 @@ package com.danske.task.services;
 
 import com.danske.task.dto.IbanDto;
 import com.danske.task.dto.IbanResponseDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.Resources;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.TreeMap;
 
 import static java.lang.Integer.parseInt;
 

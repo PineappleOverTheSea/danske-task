@@ -16,7 +16,7 @@ public class IbanController {
     public IbanController(IbanService ibanService){this.ibanService = ibanService;}
 
     @PostMapping()
-    public IbanResponseDto verifyIban(@RequestBody IbanDto ibanDto) throws IOException, ParseException {
+    public IbanResponseDto verifyIban(@RequestBody IbanDto ibanDto) {
         return ibanService.verifyIban(ibanDto);
     }
 }
