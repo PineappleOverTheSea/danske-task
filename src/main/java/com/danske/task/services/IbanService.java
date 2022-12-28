@@ -31,24 +31,16 @@ public class IbanService {
             throw new RuntimeException(e);
         }
 
+        //I would prefer try/catch to ifs but that's apparently a bad practice
         String iban = ibanDto.getIban().replace(" ", "").toUpperCase();
-        String country;
-
-        try{
-            country = iban.substring(0, 2);
-        }
-        catch (IndexOutOfBoundsException e){
+        if(iban.length() < 15)
             return IbanResponseDto.builder().valid(false).build();
-        }
 
-        long length;
-        try {
-            length = (long) countries.get(country);
-        }
-        catch (NullPointerException e){
+        String country = iban.substring(0, 2);
+        if(countries.get(country) == null)
             return IbanResponseDto.builder().valid(false).build();
-        }
 
+        long length = (long) countries.get(country);
         if(length != iban.length())
             return IbanResponseDto.builder().valid(false).build();
 
