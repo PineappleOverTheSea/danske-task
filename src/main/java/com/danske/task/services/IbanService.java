@@ -32,8 +32,22 @@ public class IbanService {
         }
 
         String iban = ibanDto.getIban().replace(" ", "").toUpperCase();
-        String country = iban.substring(0, 2);
-        long length = (long) countries.get(country);
+        String country;
+
+        try{
+            country = iban.substring(0, 2);
+        }
+        catch (IndexOutOfBoundsException e){
+            return IbanResponseDto.builder().valid(false).build();
+        }
+
+        long length;
+        try {
+            length = (long) countries.get(country);
+        }
+        catch (NullPointerException e){
+            return IbanResponseDto.builder().valid(false).build();
+        }
 
         if(length != iban.length())
             return IbanResponseDto.builder().valid(false).build();
