@@ -15,9 +15,9 @@ import static java.lang.Integer.parseInt;
 
 @Service
 public class IbanService {
-    public IbanResponseDto verifyIban(IbanDto ibanDto) {
-        JSONObject countries;
+    JSONObject countries;
 
+    IbanService(){
         //tries to read countries from a json file
         try{
             countries = (JSONObject) new JSONParser().parse(
@@ -30,6 +30,9 @@ public class IbanService {
         catch (IOException | ParseException e){
             throw new RuntimeException(e);
         }
+    }
+
+    public IbanResponseDto verifyIban(IbanDto ibanDto) {
 
         //I would prefer try/catch to ifs but that's apparently a bad practice
         String iban = ibanDto.getIban().replace(" ", "").toUpperCase();
